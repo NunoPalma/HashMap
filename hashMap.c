@@ -10,8 +10,7 @@
 /* =============================================================================
  * createHashMap
  *
- *
- * 
+ * Initializes the Hash Map structure
  *
  * @param data: a pointer to an hashMap structure
  * @return: the created hashMap
@@ -25,6 +24,17 @@ hash_map_t createHashMap(int size)
 	return hashMap;
 }
 
+/* =============================================================================
+ * initializeHashMap
+ *
+ * Initializes the nodes' structure
+ *
+ * @param hashMap: a pointer to an hashMap structure
+ * @param size: the size of the nodes
+ * @param amount: amount of elements in the nodes. Used for internal purposes
+ * @return: the created hashMap
+ * =============================================================================
+ */
 static hash_map_t initializeHashMap(hash_map_t hashMap, int size, int amount)
 {
 	hashMap->size = size;
@@ -124,4 +134,116 @@ hash_map_t expand(hash_map_t hashMap)
 			insert(newHashMap, hashMap->nodeElements[i]->key, hashMap->nodeElements[i]);
 
 	return newHashMap;
+}
+
+/* =============================================================================
+ * getItem
+ *
+ * Gets the requested item that's attached to the given key
+`*
+ * @param hashMap: a pointer to an hashMap structure
+ * @param key: an int, value used to hash the element
+ * @return: a pointer to an item
+ * =============================================================================
+ */
+void * getItem(hash_map_t hashMap, int key)
+{
+	int index = hash(hashMap, key);
+
+	while(hashMap->nodeElements[index] != NULL) {
+		if (hashMap->nodeElements[index]->key == key)
+			return hashMap->nodeElements[index]->data;
+		else
+			index = (index + index) % hashMap->size;
+	}
+
+	return NULL;
+}
+
+/* =============================================================================
+ * getNode
+ *
+ * Gets the requested node, containing a certain item, 
+ * 					 that's attached to the given key
+`*
+ * @param hashMap: a pointer to an hashMap structure
+ * @param key: an int, value used to hash the element
+ * @return: a pointer to a node
+ * =============================================================================
+ */
+static void * getNode(hash_map_t hashMap, int key)
+{
+	int index = hash(hashMap, key);
+
+	while(hashMap->nodeElements[index] != NULL) {
+		if (hashMap->nodeElements[index]->key == key)
+			return hashMap->nodeElements[index];
+		else
+			index = (index + index) % hashMap->size;
+	}
+
+	return NULL;
+}
+
+/* =============================================================================
+ * removeItem
+ *
+ * Removes the requested item that's atached to the given key
+`*
+ * @param hashMap: a pointer to an hashMap structure
+ * @param key: an int, value used to hash the element
+ * @return:
+ * =============================================================================
+ */
+void removeItem(hash_map_t hashMap, int key)
+{
+	node_t item = (node_t) getNode(hashMap, key);
+
+	if (!item) {
+		ERR("The requested item with the corresponding key doesn't exist.\n");
+		return;
+	}
+
+	freeNode(hashMap, item);
+}
+
+/* =============================================================================
+ * hasItem
+ *
+ * Checks if the given Hash Map structure contains the given key
+`*
+ * @param hashMap: a pointer to an hashMap structure
+ * @param key: an int, value used to hash the element
+ * @return:
+ * =============================================================================
+ */
+int hasItem(hash_map_t hashMap, int key)
+{
+	if (getItem(hashMap, key) != NULL ? 1 : 0);
+}
+
+/* =============================================================================
+ * freeNode
+ *
+ * Frees the memory used by the given node
+ * Makes the pointer in the Hash Map strucure containing that node point to NULL
+`*
+ * @param hashMap: a pointer to an hashMap structure
+ * @param key: an int, value used to hash the element
+ * @return:
+ * =============================================================================
+ */
+static void freeNode(hash_map_t hashMap, node_t node)
+{
+	int index = hash(hashMap, node->key);
+
+	while(hashMap->nodeElements[index] != NULL) {
+		if (hashMap->nodeElements[index]->key == node->key) {
+			free(hashMap->nodeElements[index]);
+			hashMap->nodeElements[index] = NULL;
+			return;
+		}
+		else
+			index = (index + index) % hashMap->size;
+	}
 }

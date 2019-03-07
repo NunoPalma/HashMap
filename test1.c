@@ -47,6 +47,23 @@ int main()
 			printf("%d\n", d->num);
 		}
 	}
-	
 
+	removeItem(hashMap, newData1.key);
+
+	printf("\nafter removing\n\n");
+
+	for (i = 0; i < hashMap->size; i++) {
+		if (hashMap->nodeElements[i] == NULL)
+			printf("NULL\n");
+		else {
+			data *d = (data*)hashMap->nodeElements[i]->data;
+			printf("%d\n", d->num);
+		}
+	}
+
+	printf("\n");
+
+	data *d = (data*)getItem(hashMap, newData2.key);
+
+	printf("the value %d\n", d->num);
 }
